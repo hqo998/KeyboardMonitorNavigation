@@ -25,18 +25,22 @@ int main()
 	while (!WindowShouldClose())
 	{
 
-		std::println("{}", WinGetKeyPress('D'));
+		if ((WinGetKeyPress('D') & 0b1))
+		{
+			if (hotkeyPressed)
+			{
+				hotkeyPressed = false;
+				std::println("toggle off");
+			}
+			else
+			{
+				hotkeyPressed = true;
+				std::println("toggle on");
+			}
+		}
 
-		if (WinGetKeyPress('D') < 0)
-		{
-			hotkeyPressed = true;
-			std::println("true");
-		}
-		else // if (WinGetKeyPress('D'))
-		{
-			hotkeyPressed = false;
-			std::println("false");
-		}
+
+		// std::println("{}", hotkeyPressed);
 
 		BeginTextureMode(target);
 
