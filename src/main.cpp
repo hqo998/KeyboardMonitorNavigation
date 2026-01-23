@@ -1,20 +1,22 @@
+
 #include <raylib.h>
 #include <print>
-#include <windows.h>
+
+#include <windows.hpp>
 
 int main()
 {
 	const int screenWidth = 800;
 	const int screenHeight = 450;
 
-	SetConfigFlags(FLAG_WINDOW_TOPMOST | FLAG_WINDOW_ALWAYS_RUN); // always on top + always running
-	SetConfigFlags(FLAG_WINDOW_TRANSPARENT); // Configures window to be transparent
+	// SetConfigFlags(FLAG_WINDOW_TOPMOST | FLAG_WINDOW_ALWAYS_RUN); // always on top + always running
+	SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_ALWAYS_RUN); // Configures window to be transparent + always on top + always running
 	InitWindow(screenWidth, screenHeight, "Transparent");
-    SetTargetFPS(60);
+
 	SetWindowPosition(GetMonitorWidth(0) / 2 - screenWidth / 2, GetMonitorHeight(0) / 2 - screenHeight / 2);
 	// SetWindowState(FLAG_WINDOW_UNDECORATED); // Hide border/titlebar; omit if you want them there.
 
-	
+	SetTargetFPS(30);
 
 	RenderTexture2D target = LoadRenderTexture(screenWidth, screenHeight);
 
