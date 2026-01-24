@@ -1,11 +1,12 @@
 
 #include <raylib.h>
 #include <print>
+#include <string>
 
 #include <osLayer.hpp>
 // use winapi for registering a global hotkey
 
-constexpr int optionsWide{26};
+constexpr int optionsWide{40};
 constexpr int optionsHigh{26};
 
 Color C_mutedTeal = {126, 176, 155, 255};
@@ -13,6 +14,21 @@ Color C_cottenRose = {236, 190, 180, 255};
 Color C_drySage = {197, 201, 164, 255};
 Color C_seaGrass = {81, 158, 138, 255};
 Color C_blueSlate = {71, 106, 111, 255};
+
+std::string letterSequence {""};
+
+std::string GetLabel(int index) {
+    std::string label = "";
+    while (index > 0)
+	{
+        index--;
+        char letter = ('A' + (index % 26)); // Z in ascii number - 25 back to one letter before 'A' then add the remainder. e.g. '?' + (1 % 26) = 'A',
+        label += letter;
+        index /= 26; // so that e.g 29 becomes 1, and does one more check, e.g 27 / 26 = 1 so means A
+    }
+	std::reverse(label.begin(), label.end()); // since the last letter added is appears first
+    return label;
+}
 
 int main()
 {
@@ -49,17 +65,24 @@ int main()
 			{
 				showWindow = false;
 				std::println("toggle off");
-				os::ShowWindow(hwnd, 0);
+				MinimizeWindow();
+				// os::ShowWindow(hwnd, 0);
 			}
 			else
 			{
 				showWindow = true;
 				std::println("toggle on");
+				// RestoreWindow();
 				os::ShowWindow(hwnd, 9);
 			}
 		}
 
-		// std::println("{}", showWindow);
+		if (!IsWindowMinimized())
+			std::println("hidden");
+		else
+
+		
+
 
 		BeginTextureMode(target);
 
@@ -72,18 +95,25 @@ int main()
 		{
 			for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
 			{
+				// text
+				std::string letterX = GetLabel(iWide);
+				std::string letterY = GetLabel(iHigh);
+				std::string buttonIdentity = std::format("{} {}", letterX, letterY);
+
+				// buttonn placement
 				Rectangle rect = {static_cast<float>(spacingWide * iWide),
 								  static_cast<float>(spacingHigh * iHigh),
 								  static_cast<float>(screenWidth / 40),
 								  static_cast<float>(screenWidth / 90)};
 				Vector2 origin = {rect.width * .5f, rect.height * .5f};
 				Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
+				
+				// drawing boxes
+				DrawRectangleRounded({centredRect.x+2, centredRect.y+2, centredRect.width, centredRect.height}, .3f, 5, C_cottenRose); // back
+				DrawRectangleRounded(centredRect, .3f, 5, C_mutedTeal); // front
 
-				DrawRectangleRounded({centredRect.x+2, centredRect.y+2, centredRect.width, centredRect.height}, .3f, 5, C_cottenRose); // drop shadow
-				DrawRectangleRounded(centredRect, .3f, 5, C_mutedTeal); // main 
-
-				// text
-				DrawText(TextFormat("%i %i", iWide, iHigh), static_cast<int>(centredRect.x) + 5, static_cast<int>(centredRect.y) + 5, 20, C_blueSlate);
+				// drawing box label
+				DrawText(std::format("{} {}", letterX, letterY).c_str(), static_cast<int>(centredRect.x) + 5, static_cast<int>(centredRect.y) + 5, 20, C_blueSlate);
 			}
 		}
 
