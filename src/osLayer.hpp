@@ -6,7 +6,7 @@ namespace os
 #ifdef _WIN32
 int GetKeyPresssed(char key);
 
-int isKeyDown(char key);
+int IsKeyDown(char key);
 
 bool ShowWindow(void* hwnd, int cmd);
 

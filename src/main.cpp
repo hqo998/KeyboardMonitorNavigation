@@ -59,7 +59,7 @@ int main()
 	while (!WindowShouldClose())
 	{
 
-		if ((os::GetKeyPresssed('D')) && os::isKeyDown(0x11)) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
+		if ((os::IsKeyDown(0x11) && os::GetKeyPresssed('D'))) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
 		{
 			if (showWindow)
 			{
@@ -78,8 +78,21 @@ int main()
 		}
 
 		if (!IsWindowMinimized())
-			std::println("hidden");
+		{
+			std::println("{}", letterSequence);
+
+			for (int i = 0; i < 256; i++)
+			{
+				if (os::GetKeyPresssed((char)i) && std::isupper(i))
+				{
+					letterSequence += (char)i;
+				}
+			}
+		}
 		else
+		{
+			letterSequence = "";
+		}
 
 		
 

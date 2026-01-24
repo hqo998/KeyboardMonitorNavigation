@@ -12,7 +12,7 @@ int os::GetKeyPresssed(char key)
     return GetAsyncKeyState(key) & 0b1;
 }
 
-int os::isKeyDown(char key)
+int os::IsKeyDown(char key)
 {
     return GetAsyncKeyState(key);
 }
