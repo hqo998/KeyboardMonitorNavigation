@@ -36,28 +36,30 @@ int main()
 
 	void* hwnd = GetWindowHandle(); // platform specific function to handle.
 
-	bool hotkeyPressed = false;
+	bool showWindow = true;
+
+	std::println("{}", GetMonitorPosition(0).x);
 
 	while (!WindowShouldClose())
 	{
 
-		if ((os::GetKeyPress('D') & 0b1))
+		if ((os::GetKeyPresssed('D')) && os::isKeyDown(0x11)) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
 		{
-			if (hotkeyPressed)
+			if (showWindow)
 			{
-				hotkeyPressed = false;
+				showWindow = false;
 				std::println("toggle off");
 				os::ShowWindow(hwnd, 0);
 			}
 			else
 			{
-				hotkeyPressed = true;
+				showWindow = true;
 				std::println("toggle on");
 				os::ShowWindow(hwnd, 9);
 			}
 		}
 
-		// std::println("{}", hotkeyPressed);
+		// std::println("{}", showWindow);
 
 		BeginTextureMode(target);
 
@@ -91,7 +93,7 @@ int main()
 		BeginDrawing();
 		ClearBackground(BLANK);
 
-		// if (!hotkeyPressed)
+		// if (!showWindow)
 		{
 			DrawTexturePro(target.texture,
 						   {0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},

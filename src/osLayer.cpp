@@ -1,12 +1,18 @@
 
 #include <osLayer.hpp>
 
+using namespace os;
 
 #ifdef _WIN32
 
 #include <windows.h>
 
-int os::GetKeyPress(char key)
+int os::GetKeyPresssed(char key)
+{
+    return GetAsyncKeyState(key) & 0b1;
+}
+
+int os::isKeyDown(char key)
 {
     return GetAsyncKeyState(key);
 }
