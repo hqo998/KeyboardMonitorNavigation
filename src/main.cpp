@@ -11,7 +11,7 @@ constexpr int optionsHigh{26};
 Color C_mutedTeal = {126, 176, 155, 255};
 Color C_cottenRose = {236, 190, 180, 255};
 Color C_drySage = {197, 201, 164, 255};
-Color C_seaGrass = {81, 158, 138, 255};
+Color C_seaGrass = {40, 90, 80, 255};
 Color C_blueSlate = {71, 106, 111, 255};
 
 std::string GetLabel(int index)
@@ -118,7 +118,7 @@ int main()
 					{
 						letterSequence.clear();
 					}
-					else
+					else if (key >= 0x41 && key <= 0x5A)
 					{
 						letterSequence += static_cast<char>(key);
 					}
@@ -142,6 +142,7 @@ int main()
 
 		const int spacingWide = screenWidth / optionsWide;
 		const int spacingHigh = screenHeight / optionsHigh;
+		int options { 0 };
 		// use for loop to draw locations of each box
 		for (int iWide = 1; iWide < optionsWide; iWide++)
 		{
@@ -166,11 +167,11 @@ int main()
 									 .3f,
 									 5,
 									 C_cottenRose);
-				if (SequenceInString(letterSequence, buttonIdentity))
-					DrawRectangleRounded(centredRect,
-										 .3f,
-										 5,
-										 SequenceInString(letterSequence, buttonIdentity) ? C_mutedTeal : C_seaGrass);
+
+				DrawRectangleRounded(centredRect,
+										.3f,
+										5,
+										SequenceInString(letterSequence, buttonIdentity) ? C_mutedTeal : C_seaGrass);
 
 				// drawing box label
 				DrawText(buttonIdentity.c_str(),
@@ -178,10 +179,15 @@ int main()
 						 static_cast<int>(centredRect.y) + ((int)rect.height/2)-10,
 						 20,
 						 C_blueSlate);
+				
+				if (SequenceInString(letterSequence, buttonIdentity)) options++;
 			} // for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
 		} // for (int iWide = 1; iWide < optionsWide; iWide++)
 
 		EndTextureMode();
+
+		if (options == 1)
+			std::println("only 1!");
 
 		// drawing texture on screen.
 		BeginDrawing();
