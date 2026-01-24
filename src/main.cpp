@@ -15,19 +15,20 @@ Color C_drySage = {197, 201, 164, 255};
 Color C_seaGrass = {81, 158, 138, 255};
 Color C_blueSlate = {71, 106, 111, 255};
 
-std::string letterSequence {""};
+std::string letterSequence{""};
 
-std::string GetLabel(int index) {
-    std::string label = "";
-    while (index > 0)
+std::string GetLabel(int index)
+{
+	std::string label = "";
+	while (index > 0)
 	{
-        index--;
-        char letter = ('A' + (index % 26)); // Z in ascii number - 25 back to one letter before 'A' then add the remainder. e.g. '?' + (1 % 26) = 'A',
-        label += letter;
-        index /= 26; // so that e.g 29 becomes 1, and does one more check, e.g 27 / 26 = 1 so means A
-    }
+		index--;
+		char letter = ('A' + (index % 26)); // Z in ascii number - 25 back to one letter before 'A' then add the remainder. e.g. '?' + (1 % 26) = 'A',
+		label += letter;
+		index /= 26; // so that e.g 29 becomes 1, and does one more check, e.g 27 / 26 = 1 so means A
+	}
 	std::reverse(label.begin(), label.end()); // since the last letter added is appears first
-    return label;
+	return label;
 }
 
 int main()
@@ -39,7 +40,7 @@ int main()
 
 	int monitorIndex = GetCurrentMonitor();
 	const int screenWidth = GetMonitorWidth(monitorIndex);
-	const int screenHeight = GetMonitorHeight(monitorIndex)-1; // screen goes black if it perfectly fits the monitor
+	const int screenHeight = GetMonitorHeight(monitorIndex) - 1; // screen goes black if it perfectly fits the monitor
 
 	std::println("Screen Width: {}, Screen Height: {}", screenWidth, screenHeight);
 
@@ -50,7 +51,7 @@ int main()
 
 	RenderTexture2D target = LoadRenderTexture(screenWidth, screenHeight);
 
-	void* hwnd = GetWindowHandle(); // platform specific function to handle.
+	void *hwnd = GetWindowHandle(); // platform specific function to handle.
 
 	bool showWindow = true;
 
@@ -59,7 +60,7 @@ int main()
 	while (!WindowShouldClose())
 	{
 
-		if ((os::IsKeyDown(0x11) && os::GetKeyPresssed('D'))) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
+		if ((os::IsKeyDown(VK_CONTROL) && os::GetKeyPresssed('D'))) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
 		{
 			if (showWindow)
 			{
@@ -94,58 +95,67 @@ int main()
 			letterSequence = "";
 		}
 
-		
-
-
-		BeginTextureMode(target);
-
-		ClearBackground(BLANK);
-
-		const int spacingWide = screenWidth / optionsWide;
-		const int spacingHigh = screenHeight / optionsHigh;
-		// use for loop to draw locations of each box
-		for (int iWide = 1; iWide < optionsWide; iWide++)
+		if (!IsWindowMinimized()) // dont draw when hidden
 		{
-			for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
+
+			BeginTextureMode(target);
+
+			ClearBackground(BLANK);
+
+			const int spacingWide = screenWidth / optionsWide;
+			const int spacingHigh = screenHeight / optionsHigh;
+			// use for loop to draw locations of each box
+			for (int iWide = 1; iWide < optionsWide; iWide++)
 			{
-				// text
-				std::string letterX = GetLabel(iWide);
-				std::string letterY = GetLabel(iHigh);
-				std::string buttonIdentity = std::format("{} {}", letterX, letterY);
+				for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
+				{
+					// text
+					std::string letterX = GetLabel(iWide);
+					std::string letterY = GetLabel(iHigh);
+					std::string buttonIdentity = std::format("{} {}", letterX, letterY);
 
-				// buttonn placement
-				Rectangle rect = {static_cast<float>(spacingWide * iWide),
-								  static_cast<float>(spacingHigh * iHigh),
-								  static_cast<float>(screenWidth / 40),
-								  static_cast<float>(screenWidth / 90)};
-				Vector2 origin = {rect.width * .5f, rect.height * .5f};
-				Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
-				
-				// drawing boxes
-				DrawRectangleRounded({centredRect.x+2, centredRect.y+2, centredRect.width, centredRect.height}, .3f, 5, C_cottenRose); // back
-				DrawRectangleRounded(centredRect, .3f, 5, C_mutedTeal); // front
+					// buttonn placement
+					Rectangle rect = {static_cast<float>(spacingWide * iWide),
+									  static_cast<float>(spacingHigh * iHigh),
+									  static_cast<float>(screenWidth / 40),
+									  static_cast<float>(screenWidth / 90)};
+					Vector2 origin = {rect.width * .5f, rect.height * .5f};
+					Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
 
-				// drawing box label
-				DrawText(std::format("{} {}", letterX, letterY).c_str(), static_cast<int>(centredRect.x) + 5, static_cast<int>(centredRect.y) + 5, 20, C_blueSlate);
-			}
-		}
+					// drawing boxes
+					DrawRectangleRounded({centredRect.x + 2, centredRect.y + 2, centredRect.width, centredRect.height},
+										 .3f,
+										 5,
+										 C_cottenRose);
+					DrawRectangleRounded(centredRect,
+										 .3f,
+										 5,
+										 C_mutedTeal);
 
-		// DrawRectangle(50, 50, 200, 400, {255, 0, 0, 192}); // Red at 75% opacity
-		EndTextureMode();
+					// drawing box label
+					DrawText(std::format("{} {}", letterX, letterY).c_str(),
+							 static_cast<int>(centredRect.x) + 5,
+							 static_cast<int>(centredRect.y) + 5,
+							 20,
+							 C_blueSlate);
+				} // for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
+			} //for (int iWide = 1; iWide < optionsWide; iWide++)
 
-		BeginDrawing();
-		ClearBackground(BLANK);
+			EndTextureMode();
 
-		// if (!showWindow)
-		{
+			BeginDrawing();
+			ClearBackground(BLANK);
+
 			DrawTexturePro(target.texture,
 						   {0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},
 						   {0.0f, 0.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight)},
 						   {0.f, 0.f}, 0.0f, WHITE);
-		}
 
-		EndDrawing();
-	}
+			EndDrawing();
+
+		} // if (IsWindowMinimized())
+
+	} // while (!WindowShouldClose())
 
 	UnloadRenderTexture(target);
 	CloseWindow();

@@ -21,5 +21,4 @@ bool os::ShowWindow(void* hwnd, int cmd)
 {
     return ShowWindow(static_cast<HWND>(hwnd), cmd);
 }
-
 #endif
