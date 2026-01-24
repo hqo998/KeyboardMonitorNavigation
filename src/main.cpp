@@ -62,19 +62,32 @@ int main()
 
 		if ((os::IsKeyDown(VK_CONTROL) && os::GetKeyPresssed('D'))) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
 		{
-			if (showWindow)
+			bool otherKeyPressed = false;
+
+			for (int key = 0x01; key <= 0xFE; key++)
 			{
-				showWindow = false;
-				std::println("toggle off");
-				MinimizeWindow();
-				// os::ShowWindow(hwnd, 0);
+				if (key != VK_CONTROL && key != 'D' && os::IsKeyDown((char)key)) // Check if any other key is pressed
+				{
+					otherKeyPressed = true;
+					break;
+				}
 			}
-			else
+			if (!otherKeyPressed)
 			{
-				showWindow = true;
-				std::println("toggle on");
-				// RestoreWindow();
-				os::ShowWindow(hwnd, 9);
+				if (showWindow)
+				{
+					showWindow = false;
+					std::println("toggle off");
+					MinimizeWindow();
+					// os::ShowWindow(hwnd, 0);
+				}
+				else
+				{
+					showWindow = true;
+					std::println("toggle on");
+					// RestoreWindow();
+					os::ShowWindow(hwnd, 9);
+				}
 			}
 		}
 
@@ -95,65 +108,66 @@ int main()
 			letterSequence = "";
 		}
 
-		if (!IsWindowMinimized()) // dont draw when hidden
+
+		if (IsWindowMinimized()) // dont draw when hidden
 		{
+			continue;
+		}
 
-			BeginTextureMode(target);
+		BeginTextureMode(target);
 
-			ClearBackground(BLANK);
+		ClearBackground(BLANK);
 
-			const int spacingWide = screenWidth / optionsWide;
-			const int spacingHigh = screenHeight / optionsHigh;
-			// use for loop to draw locations of each box
-			for (int iWide = 1; iWide < optionsWide; iWide++)
+		const int spacingWide = screenWidth / optionsWide;
+		const int spacingHigh = screenHeight / optionsHigh;
+		// use for loop to draw locations of each box
+		for (int iWide = 1; iWide < optionsWide; iWide++)
+		{
+			for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
 			{
-				for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
-				{
-					// text
-					std::string letterX = GetLabel(iWide);
-					std::string letterY = GetLabel(iHigh);
-					std::string buttonIdentity = std::format("{} {}", letterX, letterY);
+				// text
+				std::string letterX = GetLabel(iWide);
+				std::string letterY = GetLabel(iHigh);
+				std::string buttonIdentity = std::format("{} {}", letterX, letterY);
 
-					// buttonn placement
-					Rectangle rect = {static_cast<float>(spacingWide * iWide),
-									  static_cast<float>(spacingHigh * iHigh),
-									  static_cast<float>(screenWidth / 40),
-									  static_cast<float>(screenWidth / 90)};
-					Vector2 origin = {rect.width * .5f, rect.height * .5f};
-					Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
+				// buttonn placement
+				Rectangle rect = {static_cast<float>(spacingWide * iWide),
+									static_cast<float>(spacingHigh * iHigh),
+									static_cast<float>(screenWidth / 40),
+									static_cast<float>(screenWidth / 90)};
+				Vector2 origin = {rect.width * .5f, rect.height * .5f};
+				Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
 
-					// drawing boxes
-					DrawRectangleRounded({centredRect.x + 2, centredRect.y + 2, centredRect.width, centredRect.height},
-										 .3f,
-										 5,
-										 C_cottenRose);
-					DrawRectangleRounded(centredRect,
-										 .3f,
-										 5,
-										 C_mutedTeal);
+				// drawing boxes
+				DrawRectangleRounded({centredRect.x + 2, centredRect.y + 2, centredRect.width, centredRect.height},
+										.3f,
+										5,
+										C_cottenRose);
+				DrawRectangleRounded(centredRect,
+										.3f,
+										5,
+										C_mutedTeal);
 
-					// drawing box label
-					DrawText(std::format("{} {}", letterX, letterY).c_str(),
-							 static_cast<int>(centredRect.x) + 5,
-							 static_cast<int>(centredRect.y) + 5,
-							 20,
-							 C_blueSlate);
-				} // for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
-			} //for (int iWide = 1; iWide < optionsWide; iWide++)
+				// drawing box label
+				DrawText(std::format("{} {}", letterX, letterY).c_str(),
+							static_cast<int>(centredRect.x) + 5,
+							static_cast<int>(centredRect.y) + 5,
+							20,
+							C_blueSlate);
+			} // for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
+		} //for (int iWide = 1; iWide < optionsWide; iWide++)
 
-			EndTextureMode();
+		EndTextureMode();
 
-			BeginDrawing();
-			ClearBackground(BLANK);
+		BeginDrawing();
+		ClearBackground(BLANK);
 
-			DrawTexturePro(target.texture,
-						   {0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},
-						   {0.0f, 0.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight)},
-						   {0.f, 0.f}, 0.0f, WHITE);
+		DrawTexturePro(target.texture,
+						{0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},
+						{0.0f, 0.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight)},
+						{0.f, 0.f}, 0.0f, WHITE);
 
-			EndDrawing();
-
-		} // if (IsWindowMinimized())
+		EndDrawing();
 
 	} // while (!WindowShouldClose())
 
