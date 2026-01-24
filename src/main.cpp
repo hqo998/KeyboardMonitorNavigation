@@ -1,4 +1,3 @@
-
 #include <raylib.h>
 #include <print>
 #include <string>
@@ -6,7 +5,7 @@
 #include <osLayer.hpp>
 // use winapi for registering a global hotkey
 
-constexpr int optionsWide{40};
+constexpr int optionsWide{26};
 constexpr int optionsHigh{26};
 
 Color C_mutedTeal = {126, 176, 155, 255};
@@ -14,8 +13,6 @@ Color C_cottenRose = {236, 190, 180, 255};
 Color C_drySage = {197, 201, 164, 255};
 Color C_seaGrass = {81, 158, 138, 255};
 Color C_blueSlate = {71, 106, 111, 255};
-
-std::string letterSequence{""};
 
 std::string GetLabel(int index)
 {
@@ -29,6 +26,15 @@ std::string GetLabel(int index)
 	}
 	std::reverse(label.begin(), label.end()); // since the last letter added is appears first
 	return label;
+}
+
+bool SequenceInString(std::string_view letterSequence, std::string_view stringToCheck)
+{
+	std::size_t found = stringToCheck.find(letterSequence);
+	if (found <= 0)
+		return true;
+	// if (found != std::string::npos) return false;
+	return false;
 }
 
 int main()
@@ -54,19 +60,19 @@ int main()
 	void *hwnd = GetWindowHandle(); // platform specific function to handle.
 
 	bool showWindow = true;
+	std::string letterSequence{""};
 
 	std::println("{}", GetMonitorPosition(0).x);
 
 	while (!WindowShouldClose())
 	{
-
 		if ((os::IsKeyDown(VK_CONTROL) && os::GetKeyPresssed('D'))) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
 		{
 			bool otherKeyPressed = false;
 
-			for (int key = 0x01; key <= 0xFE; key++)
+			for (int key = 0; key < 256; key++)
 			{
-				if (key != VK_CONTROL && key != 'D' && os::IsKeyDown((char)key)) // Check if any other key is pressed
+				if (key != VK_CONTROL && key != 'D' && os::IsKeyDown(static_cast<char>(key))) // Check if any other key is pressed
 				{
 					otherKeyPressed = true;
 					break;
@@ -91,29 +97,45 @@ int main()
 			}
 		}
 
+		// record key strokes when visible by adding to letter sequene
 		if (!IsWindowMinimized())
 		{
-			std::println("{}", letterSequence);
+			// std::println("{}", letterSequence);
 
-			for (int i = 0; i < 256; i++)
+			for (int key = 0; key < 256; key++)
 			{
-				if (os::GetKeyPresssed((char)i) && std::isupper(i))
+				if (os::GetKeyPresssed(static_cast<char>(key)))
 				{
-					letterSequence += (char)i;
+					if (key == VK_BACK) // Compare key directly as an integer
+					{
+						std::println("back key");
+						if (!letterSequence.empty()) // Prevent popping from an empty string
+						{
+							letterSequence.pop_back();
+						}
+					}
+					else if (key == VK_DELETE)
+					{
+						letterSequence.clear();
+					}
+					else
+					{
+						letterSequence += static_cast<char>(key);
+					}
 				}
 			}
 		}
 		else
 		{
-			letterSequence = "";
+			letterSequence.clear();
 		}
-
 
 		if (IsWindowMinimized()) // dont draw when hidden
 		{
 			continue;
 		}
 
+		// drawing to texture
 		BeginTextureMode(target);
 
 		ClearBackground(BLANK);
@@ -128,44 +150,47 @@ int main()
 				// text
 				std::string letterX = GetLabel(iWide);
 				std::string letterY = GetLabel(iHigh);
-				std::string buttonIdentity = std::format("{} {}", letterX, letterY);
+				std::string buttonIdentity = std::format("{}{}", letterX, letterY);
 
 				// buttonn placement
 				Rectangle rect = {static_cast<float>(spacingWide * iWide),
-									static_cast<float>(spacingHigh * iHigh),
-									static_cast<float>(screenWidth / 40),
-									static_cast<float>(screenWidth / 90)};
+								  static_cast<float>(spacingHigh * iHigh),
+								  static_cast<float>(screenWidth / 40),
+								  static_cast<float>(screenWidth / 90)};
 				Vector2 origin = {rect.width * .5f, rect.height * .5f};
 				Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
 
 				// drawing boxes
-				DrawRectangleRounded({centredRect.x + 2, centredRect.y + 2, centredRect.width, centredRect.height},
-										.3f,
-										5,
-										C_cottenRose);
-				DrawRectangleRounded(centredRect,
-										.3f,
-										5,
-										C_mutedTeal);
+
+				DrawRectangleRounded({centredRect.x + 2, centredRect.y + 3, centredRect.width, centredRect.height},
+									 .3f,
+									 5,
+									 C_cottenRose);
+				if (SequenceInString(letterSequence, buttonIdentity))
+					DrawRectangleRounded(centredRect,
+										 .3f,
+										 5,
+										 SequenceInString(letterSequence, buttonIdentity) ? C_mutedTeal : C_seaGrass);
 
 				// drawing box label
-				DrawText(std::format("{} {}", letterX, letterY).c_str(),
-							static_cast<int>(centredRect.x) + 5,
-							static_cast<int>(centredRect.y) + 5,
-							20,
-							C_blueSlate);
+				DrawText(buttonIdentity.c_str(),
+						 static_cast<int>(centredRect.x) + ((int)rect.width/2)-20,
+						 static_cast<int>(centredRect.y) + ((int)rect.height/2)-10,
+						 20,
+						 C_blueSlate);
 			} // for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
-		} //for (int iWide = 1; iWide < optionsWide; iWide++)
+		} // for (int iWide = 1; iWide < optionsWide; iWide++)
 
 		EndTextureMode();
 
+		// drawing texture on screen.
 		BeginDrawing();
 		ClearBackground(BLANK);
 
 		DrawTexturePro(target.texture,
-						{0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},
-						{0.0f, 0.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight)},
-						{0.f, 0.f}, 0.0f, WHITE);
+					   {0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},
+					   {0.0f, 0.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight)},
+					   {0.f, 0.f}, 0.0f, WHITE);
 
 		EndDrawing();
 
