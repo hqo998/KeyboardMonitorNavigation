@@ -1,5 +1,12 @@
 #pragma once
 
+template <typename T>
+struct VectorXY
+{
+	T x;
+	T y;
+};
+
 enum class MouseBTN
 {
     LeftClick = 1,

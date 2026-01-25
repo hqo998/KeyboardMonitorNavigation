@@ -2,14 +2,18 @@
 #include <print>
 #include <vector>
 
-#include <osLayer.hpp>
-#include <keybinds.hpp>
+#include "osLayer.hpp"
+#include "keybinds.hpp"
+#include "configReader.hpp"
+
+
+
+
 
 // use winapi for registering a global hotkey
 Keybind toggleKeybind = {{VK_MENU, VK_SHIFT}, 'D'};
 
-constexpr int optionsWide{20};
-constexpr int optionsHigh{20};
+constexpr VectorXY options{20, 20};
 
 namespace Colours
 {
@@ -19,12 +23,7 @@ namespace Colours
 	constexpr Color text = {71, 106, 111, 255};
 }
 
-template <typename T>
-struct VectorXY
-{
-	T x;
-	T y;
-};
+
 
 std::string GetLabel(int index)
 {
@@ -47,7 +46,13 @@ bool SequenceInString(std::string_view letterSequence, std::string_view stringTo
 	return false;
 }
 
-
+void FitToMonitor(VectorXY<int> &screen, int monitorIndex)
+{
+	if (monitorIndex > GetMonitorCount()) return;
+	screen = {GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex) - 1};
+	SetWindowPosition((int)GetMonitorPosition(monitorIndex).x, (int)GetMonitorPosition(monitorIndex).y);
+	SetWindowSize(screen.x, screen.y);
+}
 
 int main()
 {
@@ -56,12 +61,9 @@ int main()
 	SetWindowState(FLAG_WINDOW_UNDECORATED); // Hide border/titlebar; omit if you want them there.
 
 	int monitorIndex = GetCurrentMonitor();
+	VectorXY<int> screen{};
 
-	const VectorXY screen{GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex) - 1}; // screen goes black if it perfectly fits the monitor
-
-
-	SetWindowPosition(0, 0);
-	SetWindowSize(screen.x, screen.y);
+	FitToMonitor(screen, monitorIndex);
 
 	SetTargetFPS(30);
 
@@ -73,6 +75,8 @@ int main()
 	bool showWindow = true;
 	std::string letterSequence{""};
 
+	ConfigReader config;
+	config.GetModifiers();
 
 	while (!WindowShouldClose())
 	{
@@ -114,6 +118,11 @@ int main()
 					{
 						letterSequence += static_cast<char>(key);
 					}
+					else if (key >= 0x30 && key <= 0x39)
+					{
+						std::println("fitting to monitor: {}", key - 0x30);
+						FitToMonitor(screen, key - 0x30 - 1);
+					}
 				}
 			}
 		}
@@ -132,16 +141,16 @@ int main()
 
 		ClearBackground(BLANK);
 
-		const VectorXY spacing{screen.x / optionsWide, screen.y / optionsHigh};
+		const VectorXY spacing{screen.x / options.x, screen.y / options.y};
 
-		int options{0};
+		int amountValid{0};
 
 		VectorXY selection = {0, 0};
 
 		// use for loop to draw locations of each box
-		for (int iWide = 1; iWide < optionsWide; iWide++)
+		for (int iWide = 1; iWide < options.x; iWide++)
 		{
-			for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
+			for (int iHigh = 1; iHigh < options.y; iHigh++)
 			{
 				// text
 				std::string letterX = GetLabel(iWide);
@@ -176,16 +185,16 @@ int main()
 
 				if (SequenceInString(letterSequence, buttonIdentity))
 				{
-					options++; // add how many valid options match sequence
-					selection.x = static_cast<int>(rect.x);
-					selection.y = static_cast<int>(rect.y);
+					amountValid++; // add how many valid amountValid match sequence
+					selection.x = static_cast<int>(rect.x); // TODO - MINUS MONITOR POSTION FOR CORRECT POS
+					selection.y = static_cast<int>(rect.y); // TODO - MINUS MONITOR POSTION FOR CORRECT
 				}
-			} // for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
-		} // for (int iWide = 1; iWide < optionsWide; iWide++)
+			} // for (int iHigh = 1; iHigh < options.y; iHigh++)
+		} // for (int iWide = 1; iWide < options.x; iWide++)
 
 		EndTextureMode();
 
-		if (options == 1)
+		if (amountValid == 1)
 		{
 			std::println("only 1!");
 			showWindow = false;

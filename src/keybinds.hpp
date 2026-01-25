@@ -1,3 +1,5 @@
+#pragma once 
+
 #include <osLayer.hpp>
 #include <vector>
 
