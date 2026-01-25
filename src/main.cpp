@@ -5,14 +5,21 @@
 #include <osLayer.hpp>
 // use winapi for registering a global hotkey
 
-constexpr int optionsWide{10};
-constexpr int optionsHigh{10};
+constexpr int optionsWide{20};
+constexpr int optionsHigh{20};
 
 Color C_mutedTeal = {126, 176, 155, 255};
 Color C_cottenRose = {236, 190, 180, 255};
 Color C_drySage = {197, 201, 164, 255};
 Color C_seaGrass = {40, 90, 80, 255};
 Color C_blueSlate = {71, 106, 111, 255};
+
+template<typename T>
+struct VectorXY
+{
+	T x;
+	T y;
+};
 
 std::string GetLabel(int index)
 {
@@ -45,17 +52,17 @@ int main()
 	SetWindowState(FLAG_WINDOW_UNDECORATED); // Hide border/titlebar; omit if you want them there.
 
 	int monitorIndex = GetCurrentMonitor();
-	const int screenWidth = GetMonitorWidth(monitorIndex);
-	const int screenHeight = GetMonitorHeight(monitorIndex) - 1; // screen goes black if it perfectly fits the monitor
 
-	std::println("Screen Width: {}, Screen Height: {}", screenWidth, screenHeight);
+	const VectorXY screen {GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex) - 1}; // screen goes black if it perfectly fits the monitor
+
+	std::println("Screen Width: {}, Screen Height: {}", screen.x, screen.y);
 
 	SetWindowPosition(0, 0);
-	SetWindowSize(screenWidth, screenHeight);
+	SetWindowSize(screen.x, screen.y);
 
 	SetTargetFPS(30);
 
-	RenderTexture2D target = LoadRenderTexture(screenWidth, screenHeight);
+	RenderTexture2D target = LoadRenderTexture(screen.x, screen.y);
 
 	OSLayer os;
 	os.windowHandle = GetWindowHandle(); // platform specific function to handle.
@@ -93,7 +100,7 @@ int main()
 					showWindow = true;
 					std::println("toggle on");
 					// RestoreWindow();
-					os.ShowWindow(9); // make enum for numbers
+					os.WindowVisibility(SW_RESTORE); // make enum for numbers
 				}
 			}
 		}
@@ -141,11 +148,12 @@ int main()
 
 		ClearBackground(BLANK);
 
-		const int spacingWide = screenWidth / optionsWide;
-		const int spacingHigh = screenHeight / optionsHigh;
+		const VectorXY spacing {screen.x / optionsWide, screen.y / optionsHigh};
+
 		int options { 0 };
-		int selectionX = { };
-		int selectionY = { };
+
+		VectorXY selection = {0, 0};
+
 		// use for loop to draw locations of each box
 		for (int iWide = 1; iWide < optionsWide; iWide++)
 		{
@@ -157,10 +165,10 @@ int main()
 				std::string buttonIdentity = std::format("{}{}", letterX, letterY);
 
 				// buttonn placement
-				Rectangle rect = {static_cast<float>(spacingWide * iWide),
-								  static_cast<float>(spacingHigh * iHigh),
-								  static_cast<float>(screenWidth / 40),
-								  static_cast<float>(screenWidth / 90)};
+				Rectangle rect = {static_cast<float>(spacing.x * iWide),
+								  static_cast<float>(spacing.y * iHigh),
+								  static_cast<float>(screen.x / 40),
+								  static_cast<float>(screen.x / 90)};
 				Vector2 origin = {rect.width * .5f, rect.height * .5f};
 				Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
 
@@ -185,8 +193,8 @@ int main()
 				if (SequenceInString(letterSequence, buttonIdentity))
 				{
 					options++; // add how many valid options match sequence
-					selectionX = static_cast<int>(rect.x);
-					selectionY = static_cast<int>(rect.y);
+					selection.x = static_cast<int>(rect.x);
+					selection.y = static_cast<int>(rect.y);
 				}
 			} // for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
 		} // for (int iWide = 1; iWide < optionsWide; iWide++)
@@ -198,7 +206,7 @@ int main()
 			std::println("only 1!");
 			showWindow = false;
 			MinimizeWindow();
-			os.SetCursorPosition(selectionX, selectionY);
+			os.SetCursorPosition(selection.x, selection.y);
 		}
 
 		// drawing texture on screen.
@@ -207,7 +215,7 @@ int main()
 
 		DrawTexturePro(target.texture,
 					   {0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},
-					   {0.0f, 0.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight)},
+					   {0.0f, 0.0f, static_cast<float>(screen.x), static_cast<float>(screen.y)},
 					   {0.f, 0.f}, 0.0f, WHITE);
 
 		EndDrawing();

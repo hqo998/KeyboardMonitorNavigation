@@ -13,6 +13,10 @@ public:
 
     bool SetCursorPosition(int x, int y);
 
+
+
+}; // class OSLayer
+
 #ifdef _WIN32
     #define VK_BACK           0x08
     #define VK_TAB            0x09
@@ -109,6 +113,17 @@ public:
     #define VK_OEM_AX         0xE1  //  'AX' key on Japanese AX kbd
     #define VK_OEM_102        0xE2  //  "<>" or "\|" on RT 102-key kbd.
 
-#endif // #ifdef _WIN32
+    #define SW_HIDE 0
+    #define SW_NORMAL 1
+    #define SW_SHOWMINIMIZED 2
+    #define SW_SHOWMAXIMIZED 3
+    #define SW_SHOWNOACTIVATE 4
+    #define SW_SHOW 5
+    #define SW_MINIMIZE 6
+    #define SW_SHOWMINNOACTIVE 7
+    #define SW_SHOWNA 8
+    #define SW_RESTORE 9
+    #define SW_SHOWDEFAULT 10
+    #define SW_FORCEMINIMIZE 11
 
-}; // class OSLayer
+#endif // #ifdef _WIN32
