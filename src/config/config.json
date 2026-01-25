@@ -1,0 +1,13 @@
+
+
+
+toggleKeybind = {{VK_MENU, VK_SHIFT}, 'D'};
+
+optionsWide = {20};
+optionsHigh = {20};
+
+
+valid = {126, 176, 155, 255};
+invalid = {40, 90, 80, 255};
+shadow = {236, 190, 180, 255};
+text = {71, 106, 111, 255};

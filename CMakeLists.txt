@@ -57,20 +57,20 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
 
-# set(RESOURCES_PATH ${CMAKE_SOURCE_DIR}/src/resources)
-# if ("${PLATFORM}" STREQUAL "Web")
-#     add_custom_command(
-#         TARGET ${PROJECT_NAME} PRE_BUILD
-#         COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES_PATH} $<TARGET_FILE_DIR:${PROJECT_NAME}>/../resources
-#     )
-#     #DEPENDS ${PROJECT_NAME}
-# else()
-#     add_custom_command(
-#         TARGET ${PROJECT_NAME} POST_BUILD
-#         COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES_PATH} $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
-#     )
-#     #DEPENDS ${PROJECT_NAME}
-# endif()
+set(CONFIG_PATH ${CMAKE_SOURCE_DIR}/src/config)
+if ("${PLATFORM}" STREQUAL "Web")
+    # add_custom_command(
+    #     TARGET ${PROJECT_NAME} PRE_BUILD
+    #     COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES_PATH} $<TARGET_FILE_DIR:${PROJECT_NAME}>/../resources
+    # )
+    # #DEPENDS ${PROJECT_NAME}
+else()
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CONFIG_PATH} $<TARGET_FILE_DIR:${PROJECT_NAME}>/config
+    )
+    #DEPENDS ${PROJECT_NAME}
+endif()
 
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
@@ -103,4 +103,9 @@ if(WIN32)
     endif()
 endif()
 
+include(FetchContent)
+
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
+FetchContent_MakeAvailable(json)
+target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
 

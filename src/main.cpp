@@ -13,11 +13,10 @@ constexpr int optionsHigh{20};
 
 namespace Colours
 {
-	constexpr Color mutedTeal = {126, 176, 155, 255};
-	constexpr Color cottenRose = {236, 190, 180, 255};
-	constexpr Color drySage = {197, 201, 164, 255};
-	constexpr Color seaGrass = {40, 90, 80, 255};
-	constexpr Color blueSlate = {71, 106, 111, 255};
+	constexpr Color valid = {126, 176, 155, 255};
+	constexpr Color invalid = {40, 90, 80, 255};
+	constexpr Color shadow = {236, 190, 180, 255};
+	constexpr Color text = {71, 106, 111, 255};
 }
 
 template <typename T>
@@ -161,19 +160,19 @@ int main()
 				DrawRectangleRounded({centredRect.x + 2, centredRect.y + 3, centredRect.width, centredRect.height},
 									 .3f,
 									 5,
-									 Colours::cottenRose);
+									 Colours::shadow);
 
 				DrawRectangleRounded(centredRect,
 									 .3f,
 									 5,
-									 SequenceInString(letterSequence, buttonIdentity) ? Colours::mutedTeal : Colours::seaGrass);
+									 SequenceInString(letterSequence, buttonIdentity) ? Colours::valid : Colours::invalid);
 
 				// drawing box label
 				DrawText(buttonIdentity.c_str(),
 						 static_cast<int>(centredRect.x) + ((int)rect.width / 2) - 20,
 						 static_cast<int>(centredRect.y) + ((int)rect.height / 2) - 10,
 						 20,
-						 Colours::blueSlate);
+						 Colours::text);
 
 				if (SequenceInString(letterSequence, buttonIdentity))
 				{
