@@ -137,7 +137,8 @@ int main()
 		}
 
 		// drawing to texture
-		BeginTextureMode(target);
+		// BeginTextureMode(target);
+		BeginDrawing();
 
 		ClearBackground(BLANK);
 
@@ -192,7 +193,8 @@ int main()
 			} // for (int iHigh = 1; iHigh < options.y; iHigh++)
 		} // for (int iWide = 1; iWide < options.x; iWide++)
 
-		EndTextureMode();
+		// EndTextureMode();
+		EndDrawing();
 
 		if (amountValid == 1)
 		{
@@ -202,16 +204,16 @@ int main()
 			os.SendMouseClick(MouseBTN::LeftClick, selection.x, selection.y);
 		}
 
-		// drawing texture on screen.
-		BeginDrawing();
-		ClearBackground(BLANK);
+		// // drawing texture on screen.
+		// BeginDrawing();
+		// ClearBackground(BLANK);
 
-		DrawTexturePro(target.texture,
-					   {0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},
-					   {0.0f, 0.0f, static_cast<float>(screen.x), static_cast<float>(screen.y)},
-					   {0.f, 0.f}, 0.0f, WHITE);
+		// DrawTexturePro(target.texture,
+		// 			   {0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},
+		// 			   {0.0f, 0.0f, static_cast<float>(screen.x), static_cast<float>(screen.y)},
+		// 			   {0.f, 0.f}, 0.0f, WHITE);
 
-		EndDrawing();
+		// EndDrawing();
 
 	} // while (!WindowShouldClose())
 
