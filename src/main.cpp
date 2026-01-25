@@ -49,6 +49,7 @@ bool SequenceInString(std::string_view letterSequence, std::string_view stringTo
 void FitToMonitor(VectorXY<int> &screen, int monitorIndex)
 {
 	if (monitorIndex > GetMonitorCount() - 1) return;
+	if (monitorIndex < 0) return;
 	screen = {GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex) - 1};
 	SetWindowPosition((int)GetMonitorPosition(monitorIndex).x, (int)GetMonitorPosition(monitorIndex).y);
 	SetWindowSize(screen.x, screen.y);
@@ -56,11 +57,12 @@ void FitToMonitor(VectorXY<int> &screen, int monitorIndex)
 
 int main()
 {
-	SetExitKey(NULL);
+	
 
 	SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_ALWAYS_RUN); // Configures window to be transparent + always on top + always running
 	InitWindow(800, 450, "Keyboard Navigation");
 	SetWindowState(FLAG_WINDOW_UNDECORATED); // Hide border/titlebar; omit if you want them there.
+	SetExitKey(0);
 
 	int monitorIndex = GetCurrentMonitor();
 	VectorXY<int> screen{};
@@ -74,7 +76,6 @@ int main()
 	OSLayer os;
 	os.windowHandle = GetWindowHandle(); // platform specific function to handle.
 
-	bool showWindow = true;
 	std::string letterSequence{""};
 
 	Font customFont = LoadFontEx("config/Oswald-Medium.ttf", 96, NULL, 0);
@@ -84,14 +85,13 @@ int main()
 	{
 		// hotkey
 		if (toggleKeybind.IsActivated(os)) {
-			if (showWindow) {
-				showWindow = false;
+			if (!IsWindowMinimized()) {
 				std::println("toggle off");
 				os.WindowVisibility(SW_SHOWMINIMIZED);
 			} else {
-				showWindow = true;
 				std::println("toggle on");
 				os.WindowVisibility(SW_RESTORE);
+				os.FocusWindow();
 			}
 		}
 
@@ -116,14 +116,18 @@ int main()
 					{
 						letterSequence.clear();
 					}
-					else if (key >= 0x41 && key <= 0x5A)
+					else if (key >= 'A' && key <= 'Z') // ... a to z
 					{
 						letterSequence += static_cast<char>(key);
 					}
-					else if (key >= 0x30 && key <= 0x39)
+					else if (key >= '0' && key <= '9') // check number keys
 					{
 						std::println("fitting to monitor: {}", key - 0x30);
 						FitToMonitor(screen, key - 0x30 - 1);
+					}
+					else if (key == VK_ESCAPE)
+					{
+						os.WindowVisibility(SW_SHOWMINIMIZED);
 					}
 				}
 			}
@@ -220,7 +224,7 @@ int main()
 					fontSpacing,
 					Colours::shadow);
 		DrawTextPro(customFont,
-			letterSequence.c_str(), 
+			letterSequence.c_str(),
 					{(screen.x / 2 - textSize.x/2), 10},
 					{0, 0},
 					.0f,
@@ -234,8 +238,7 @@ int main()
 		if (amountValid == 1)
 		{
 			std::println("only 1!");
-			showWindow = false;
-			MinimizeWindow();
+			os.WindowVisibility(SW_SHOWMINIMIZED);
 			os.SendMouseClick(MouseBTN::LeftClick, selection.x, selection.y);
 		}
 

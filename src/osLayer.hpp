@@ -24,6 +24,8 @@ public:
 
     bool WindowVisibility(int cmd);
 
+    bool FocusWindow();
+
     bool SetMousePos(int x, int y);
 
     bool SendMouseClick(MouseBTN clickType);
@@ -51,6 +53,7 @@ public:
 #define VK_PAUSE 0x13
 #define VK_CAPITAL 0x14
 
+#define VK_ESCAPE 0x1B
 #define VK_SPACE 0x20
 #define VK_PRIOR 0x21
 #define VK_NEXT 0x22

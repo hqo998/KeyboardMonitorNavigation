@@ -20,6 +20,11 @@ bool OSLayer::WindowVisibility(int cmd)
     return ShowWindow(static_cast<HWND>(windowHandle), cmd);
 }
 
+bool OSLayer::FocusWindow()
+{
+    return SetFocus(static_cast<HWND>(windowHandle));
+}
+
 bool OSLayer::SetMousePos(int x, int y)
 {
     return SetCursorPos(x, y);
