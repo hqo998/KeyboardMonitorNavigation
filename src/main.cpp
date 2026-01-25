@@ -5,8 +5,8 @@
 #include <osLayer.hpp>
 // use winapi for registering a global hotkey
 
-constexpr int optionsWide{26};
-constexpr int optionsHigh{26};
+constexpr int optionsWide{10};
+constexpr int optionsHigh{10};
 
 Color C_mutedTeal = {126, 176, 155, 255};
 Color C_cottenRose = {236, 190, 180, 255};
@@ -57,7 +57,8 @@ int main()
 
 	RenderTexture2D target = LoadRenderTexture(screenWidth, screenHeight);
 
-	void *hwnd = GetWindowHandle(); // platform specific function to handle.
+	OSLayer os;
+	os.windowHandle = GetWindowHandle(); // platform specific function to handle.
 
 	bool showWindow = true;
 	std::string letterSequence{""};
@@ -66,13 +67,13 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		if ((os::IsKeyDown(VK_CONTROL) && os::GetKeyPresssed('D'))) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
+		if ((os.IsKeyDown(VK_CONTROL) && os.GetKeyPresssed('D'))) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
 		{
 			bool otherKeyPressed = false;
 
 			for (int key = 0; key < 256; key++)
 			{
-				if (key != VK_CONTROL && key != 'D' && os::IsKeyDown(static_cast<char>(key))) // Check if any other key is pressed
+				if (key != VK_CONTROL && key != 'D' && os.IsKeyDown(static_cast<char>(key))) // Check if any other key is pressed
 				{
 					otherKeyPressed = true;
 					break;
@@ -85,14 +86,14 @@ int main()
 					showWindow = false;
 					std::println("toggle off");
 					MinimizeWindow();
-					// os::ShowWindow(hwnd, 0);
+					// OSLayer::ShowWindow(hwnd, 0);
 				}
 				else
 				{
 					showWindow = true;
 					std::println("toggle on");
 					// RestoreWindow();
-					os::ShowWindow(hwnd, 9);
+					os.ShowWindow(9); // make enum for numbers
 				}
 			}
 		}
@@ -104,7 +105,7 @@ int main()
 
 			for (int key = 0; key < 256; key++)
 			{
-				if (os::GetKeyPresssed(static_cast<char>(key)))
+				if (os.GetKeyPresssed(static_cast<char>(key)))
 				{
 					if (key == VK_BACK) // Compare key directly as an integer
 					{
@@ -143,6 +144,8 @@ int main()
 		const int spacingWide = screenWidth / optionsWide;
 		const int spacingHigh = screenHeight / optionsHigh;
 		int options { 0 };
+		int selectionX = { };
+		int selectionY = { };
 		// use for loop to draw locations of each box
 		for (int iWide = 1; iWide < optionsWide; iWide++)
 		{
@@ -162,7 +165,6 @@ int main()
 				Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
 
 				// drawing boxes
-
 				DrawRectangleRounded({centredRect.x + 2, centredRect.y + 3, centredRect.width, centredRect.height},
 									 .3f,
 									 5,
@@ -180,14 +182,24 @@ int main()
 						 20,
 						 C_blueSlate);
 				
-				if (SequenceInString(letterSequence, buttonIdentity)) options++;
+				if (SequenceInString(letterSequence, buttonIdentity))
+				{
+					options++; // add how many valid options match sequence
+					selectionX = static_cast<int>(rect.x);
+					selectionY = static_cast<int>(rect.y);
+				}
 			} // for (int iHigh = 1; iHigh < optionsHigh; iHigh++)
 		} // for (int iWide = 1; iWide < optionsWide; iWide++)
 
 		EndTextureMode();
 
 		if (options == 1)
+		{
 			std::println("only 1!");
+			showWindow = false;
+			MinimizeWindow();
+			os.SetCursorPosition(selectionX, selectionY);
+		}
 
 		// drawing texture on screen.
 		BeginDrawing();
