@@ -33,7 +33,7 @@ bool OSLayer::SendMouseClick(MouseBTN clickType)
     mouse[0].mi.dx = 0;
     mouse[0].mi.dy = 0;
     mouse[0].mi.mouseData = 0;
-    mouse[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
     mouse[0].mi.time = 0;
     mouse[0].mi.dwExtraInfo = 0;
 
@@ -41,7 +41,6 @@ bool OSLayer::SendMouseClick(MouseBTN clickType)
     mouse[1].mi.dx = 0;
     mouse[1].mi.dy = 0;
     mouse[1].mi.mouseData = 0;
-    mouse[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
     mouse[1].mi.time = 0;
     mouse[1].mi.dwExtraInfo = 0;
 
