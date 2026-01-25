@@ -8,13 +8,16 @@
 constexpr int optionsWide{20};
 constexpr int optionsHigh{20};
 
-Color C_mutedTeal = {126, 176, 155, 255};
-Color C_cottenRose = {236, 190, 180, 255};
-Color C_drySage = {197, 201, 164, 255};
-Color C_seaGrass = {40, 90, 80, 255};
-Color C_blueSlate = {71, 106, 111, 255};
+namespace Colours
+{
+	constexpr Color mutedTeal = {126, 176, 155, 255};
+	constexpr Color cottenRose = {236, 190, 180, 255};
+	constexpr Color drySage = {197, 201, 164, 255};
+	constexpr Color seaGrass = {40, 90, 80, 255};
+	constexpr Color blueSlate = {71, 106, 111, 255};
+}
 
-template<typename T>
+template <typename T>
 struct VectorXY
 {
 	T x;
@@ -37,10 +40,8 @@ std::string GetLabel(int index)
 
 bool SequenceInString(std::string_view letterSequence, std::string_view stringToCheck)
 {
-	std::size_t found = stringToCheck.find(letterSequence);
-	if (found <= 0)
-		return true;
-	// if (found != std::string::npos) return false;
+	if (stringToCheck.find(letterSequence) <= 0)
+		return true; // make sure sequence is at the beginning
 	return false;
 }
 
@@ -53,7 +54,7 @@ int main()
 
 	int monitorIndex = GetCurrentMonitor();
 
-	const VectorXY screen {GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex) - 1}; // screen goes black if it perfectly fits the monitor
+	const VectorXY screen{GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex) - 1}; // screen goes black if it perfectly fits the monitor
 
 	std::println("Screen Width: {}, Screen Height: {}", screen.x, screen.y);
 
@@ -148,9 +149,9 @@ int main()
 
 		ClearBackground(BLANK);
 
-		const VectorXY spacing {screen.x / optionsWide, screen.y / optionsHigh};
+		const VectorXY spacing{screen.x / optionsWide, screen.y / optionsHigh};
 
-		int options { 0 };
+		int options{0};
 
 		VectorXY selection = {0, 0};
 
@@ -176,20 +177,20 @@ int main()
 				DrawRectangleRounded({centredRect.x + 2, centredRect.y + 3, centredRect.width, centredRect.height},
 									 .3f,
 									 5,
-									 C_cottenRose);
+									 Colours::cottenRose);
 
 				DrawRectangleRounded(centredRect,
-										.3f,
-										5,
-										SequenceInString(letterSequence, buttonIdentity) ? C_mutedTeal : C_seaGrass);
+									 .3f,
+									 5,
+									 SequenceInString(letterSequence, buttonIdentity) ? Colours::mutedTeal : Colours::seaGrass);
 
 				// drawing box label
 				DrawText(buttonIdentity.c_str(),
-						 static_cast<int>(centredRect.x) + ((int)rect.width/2)-20,
-						 static_cast<int>(centredRect.y) + ((int)rect.height/2)-10,
+						 static_cast<int>(centredRect.x) + ((int)rect.width / 2) - 20,
+						 static_cast<int>(centredRect.y) + ((int)rect.height / 2) - 10,
 						 20,
-						 C_blueSlate);
-				
+						 Colours::blueSlate);
+
 				if (SequenceInString(letterSequence, buttonIdentity))
 				{
 					options++; // add how many valid options match sequence
@@ -206,7 +207,7 @@ int main()
 			std::println("only 1!");
 			showWindow = false;
 			MinimizeWindow();
-			os.SetCursorPosition(selection.x, selection.y);
+			os.SendMouseClick(MouseBTN::LeftClick, selection.x, selection.y);
 		}
 
 		// drawing texture on screen.
