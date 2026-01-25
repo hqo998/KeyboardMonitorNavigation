@@ -56,6 +56,8 @@ void FitToMonitor(VectorXY<int> &screen, int monitorIndex)
 
 int main()
 {
+	SetExitKey(NULL);
+
 	SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_ALWAYS_RUN); // Configures window to be transparent + always on top + always running
 	InitWindow(800, 450, "Keyboard Navigation");
 	SetWindowState(FLAG_WINDOW_UNDECORATED); // Hide border/titlebar; omit if you want them there.
@@ -183,12 +185,6 @@ int main()
 									 SequenceInString(letterSequence, buttonIdentity) ? Colours::valid : Colours::invalid);
 
 				// drawing box label
-				// DrawText(buttonIdentity.c_str(), 
-				// 		 static_cast<int>(centredRect.x + (rect.width / 2) - 20),
-				// 		 static_cast<int>(centredRect.y + (rect.height / 2) - 9),
-				// 		 20,
-				// 		 Colours::text);
-				
 				DrawTextPro(customFont,
 					buttonIdentity.c_str(), 
 						 {(rect.x + (rect.width - textSize.x)/2), (rect.y + (rect.height - textSize.y)/2)},
@@ -199,6 +195,7 @@ int main()
 						 fontSpacing,
 						 Colours::text);
 
+
 				// setting selection stuff.
 				if (SequenceInString(letterSequence, buttonIdentity))
 				{
@@ -208,6 +205,28 @@ int main()
 				}
 			} // for (int iHigh = 1; iHigh < options.y; iHigh++)
 		} // for (int iWide = 1; iWide < options.x; iWide++)
+
+
+		// text letter sequence
+		float fontSize { 40 };
+		float fontSpacing { 3 };
+		Vector2 textSize = MeasureTextEx(customFont, letterSequence.c_str(), fontSize, fontSpacing);
+		DrawTextPro(customFont,
+			letterSequence.c_str(), 
+					{screen.x / 2 - textSize.x/2+1, 10+1},
+					{0, 0},
+					.0f,
+					fontSize,
+					fontSpacing,
+					Colours::shadow);
+		DrawTextPro(customFont,
+			letterSequence.c_str(), 
+					{(screen.x / 2 - textSize.x/2), 10},
+					{0, 0},
+					.0f,
+					fontSize,
+					fontSpacing,
+					Colours::valid);
 
 		// EndTextureMode();
 		EndDrawing();
