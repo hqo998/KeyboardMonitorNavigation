@@ -48,7 +48,7 @@ bool SequenceInString(std::string_view letterSequence, std::string_view stringTo
 
 void FitToMonitor(VectorXY<int> &screen, int monitorIndex)
 {
-	if (monitorIndex > GetMonitorCount()) return;
+	if (monitorIndex > GetMonitorCount() - 1) return;
 	screen = {GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex) - 1};
 	SetWindowPosition((int)GetMonitorPosition(monitorIndex).x, (int)GetMonitorPosition(monitorIndex).y);
 	SetWindowSize(screen.x, screen.y);
@@ -75,8 +75,8 @@ int main()
 	bool showWindow = true;
 	std::string letterSequence{""};
 
-	ConfigReader config;
-	config.GetModifiers();
+	Font customFont = LoadFontEx("config/Oswald-Medium.ttf", 96, NULL, 0);
+	SetTextureFilter(customFont.texture, TEXTURE_FILTER_BILINEAR);
 
 	while (!WindowShouldClose())
 	{
@@ -146,7 +146,7 @@ int main()
 
 		int amountValid{0};
 
-		VectorXY selection = {0, 0};
+		VectorXY<int> selection = {};
 
 		// use for loop to draw locations of each box
 		for (int iWide = 1; iWide < options.x; iWide++)
@@ -158,11 +158,16 @@ int main()
 				std::string letterY = GetLabel(iHigh);
 				std::string buttonIdentity = std::format("{}{}", letterX, letterY);
 
+				// text calcs
+				float fontSize { 30 };
+				float fontSpacing { 3 };
+				Vector2 textSize = MeasureTextEx(customFont, buttonIdentity.c_str(), fontSize, fontSpacing);
+
 				// buttonn placement
 				Rectangle rect = {static_cast<float>(spacing.x * iWide),
 								  static_cast<float>(spacing.y * iHigh),
-								  static_cast<float>(screen.x / 40),
-								  static_cast<float>(screen.x / 90)};
+								  std::max(static_cast<float>(screen.x / 40), (textSize.x + 10)),
+								  30};
 				Vector2 origin = {rect.width * .5f, rect.height * .5f};
 				Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
 
@@ -178,17 +183,28 @@ int main()
 									 SequenceInString(letterSequence, buttonIdentity) ? Colours::valid : Colours::invalid);
 
 				// drawing box label
-				DrawText(buttonIdentity.c_str(),
-						 static_cast<int>(centredRect.x) + ((int)rect.width / 2) - 20,
-						 static_cast<int>(centredRect.y) + ((int)rect.height / 2) - 10,
-						 20,
+				// DrawText(buttonIdentity.c_str(), 
+				// 		 static_cast<int>(centredRect.x + (rect.width / 2) - 20),
+				// 		 static_cast<int>(centredRect.y + (rect.height / 2) - 9),
+				// 		 20,
+				// 		 Colours::text);
+				
+				DrawTextPro(customFont,
+					buttonIdentity.c_str(), 
+						 {(rect.x + (rect.width - textSize.x)/2), (rect.y + (rect.height - textSize.y)/2)},
+						// {(rect.x), (rect.y)},
+						 origin,
+						 .0f,
+						 fontSize,
+						 fontSpacing,
 						 Colours::text);
 
+				// setting selection stuff.
 				if (SequenceInString(letterSequence, buttonIdentity))
 				{
 					amountValid++; // add how many valid amountValid match sequence
-					selection.x = static_cast<int>(rect.x); // TODO - MINUS MONITOR POSTION FOR CORRECT POS
-					selection.y = static_cast<int>(rect.y); // TODO - MINUS MONITOR POSTION FOR CORRECT
+					selection.x = static_cast<int>(rect.x + GetMonitorPosition(GetCurrentMonitor()).x); // TODO - MINUS MONITOR POSTION FOR CORRECT POS
+					selection.y = static_cast<int>(rect.y + GetMonitorPosition(GetCurrentMonitor()).y); // TODO - MINUS MONITOR POSTION FOR CORRECT
 				}
 			} // for (int iHigh = 1; iHigh < options.y; iHigh++)
 		} // for (int iWide = 1; iWide < options.x; iWide++)
@@ -203,17 +219,6 @@ int main()
 			MinimizeWindow();
 			os.SendMouseClick(MouseBTN::LeftClick, selection.x, selection.y);
 		}
-
-		// // drawing texture on screen.
-		// BeginDrawing();
-		// ClearBackground(BLANK);
-
-		// DrawTexturePro(target.texture,
-		// 			   {0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height)},
-		// 			   {0.0f, 0.0f, static_cast<float>(screen.x), static_cast<float>(screen.y)},
-		// 			   {0.f, 0.f}, 0.0f, WHITE);
-
-		// EndDrawing();
 
 	} // while (!WindowShouldClose())
 
