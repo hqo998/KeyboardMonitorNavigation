@@ -1,9 +1,12 @@
 #include <raylib.h>
 #include <print>
-#include <string>
+#include <vector>
 
 #include <osLayer.hpp>
+#include <keybinds.hpp>
+
 // use winapi for registering a global hotkey
+Keybind toggleKeybind = {{VK_MENU, VK_SHIFT}, 'D'};
 
 constexpr int optionsWide{20};
 constexpr int optionsHigh{20};
@@ -45,18 +48,18 @@ bool SequenceInString(std::string_view letterSequence, std::string_view stringTo
 	return false;
 }
 
+
+
 int main()
 {
-
 	SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_ALWAYS_RUN); // Configures window to be transparent + always on top + always running
-	InitWindow(800, 450, "Transparent");
+	InitWindow(800, 450, "Keyboard Navigation");
 	SetWindowState(FLAG_WINDOW_UNDECORATED); // Hide border/titlebar; omit if you want them there.
 
 	int monitorIndex = GetCurrentMonitor();
 
 	const VectorXY screen{GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex) - 1}; // screen goes black if it perfectly fits the monitor
 
-	std::println("Screen Width: {}, Screen Height: {}", screen.x, screen.y);
 
 	SetWindowPosition(0, 0);
 	SetWindowSize(screen.x, screen.y);
@@ -71,38 +74,19 @@ int main()
 	bool showWindow = true;
 	std::string letterSequence{""};
 
-	std::println("{}", GetMonitorPosition(0).x);
 
 	while (!WindowShouldClose())
 	{
-		if ((os.IsKeyDown(VK_CONTROL) && os.GetKeyPresssed('D'))) // all but one key has to be checked if down to make it so you dont need frame perfect press. But one pressed is needed to avoid repeated activation.
-		{
-			bool otherKeyPressed = false;
-
-			for (int key = 0; key < 256; key++)
-			{
-				if (key != VK_CONTROL && key != 'D' && os.IsKeyDown(static_cast<char>(key))) // Check if any other key is pressed
-				{
-					otherKeyPressed = true;
-					break;
-				}
-			}
-			if (!otherKeyPressed)
-			{
-				if (showWindow)
-				{
-					showWindow = false;
-					std::println("toggle off");
-					MinimizeWindow();
-					// OSLayer::ShowWindow(hwnd, 0);
-				}
-				else
-				{
-					showWindow = true;
-					std::println("toggle on");
-					// RestoreWindow();
-					os.WindowVisibility(SW_RESTORE); // make enum for numbers
-				}
+		// hotkey
+		if (toggleKeybind.IsActivated(os)) {
+			if (showWindow) {
+				showWindow = false;
+				std::println("toggle off");
+				os.WindowVisibility(SW_SHOWMINIMIZED);
+			} else {
+				showWindow = true;
+				std::println("toggle on");
+				os.WindowVisibility(SW_RESTORE);
 			}
 		}
 
