@@ -59,7 +59,7 @@ int main()
 {
 	
 
-	SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_ALWAYS_RUN); // Configures window to be transparent + always on top + always running
+	SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_ALWAYS_RUN | FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI); // Configures window to be transparent + always on top + always running
 	InitWindow(800, 450, "Keyboard Navigation");
 	SetWindowState(FLAG_WINDOW_UNDECORATED); // Hide border/titlebar; omit if you want them there.
 	SetExitKey(0);
@@ -83,7 +83,7 @@ int main()
 
 	Image icon = LoadImage("config/keyboardnavigator_icon.png");
 	SetWindowIcon(icon);
-	UnloadImage(icon); // Needed if continuously loaded.
+	UnloadImage(icon); // Needed if continuously loaded.fg
 
 	while (!WindowShouldClose())
 	{
@@ -129,7 +129,7 @@ int main()
 						std::println("fitting to monitor: {}", key - 0x30);
 						FitToMonitor(screen, key - 0x30 - 1);
 					}
-					else if (key == VK_ESCAPE)
+					else if (key == VK_ESCAPE || key == VK_LBUTTON)
 					{
 						os.WindowVisibility(SW_SHOWMINIMIZED);
 					}
