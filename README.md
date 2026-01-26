@@ -17,6 +17,7 @@ Keyboard Shortcut Monitor Navigation is a lightweight and efficient application 
 ## Getting Started
 - Default hotkey: SHIFT+ALT+D
 - Switch monitors: 1 through 9 keys
+- Type the sequence of keys that appear where you want to click / focus.
 
 ### Prerequisites
 - CMake (minimum version 3.15)
@@ -49,7 +50,13 @@ Keyboard Shortcut Monitor Navigation is a lightweight and efficient application 
    ``` -->
 
 ## Configuration
-The application uses a `config.json` file located in the `src/config/` directory. Modify this file to customize the behavior of the application. Example:
+The application uses a `config.json` file located in the `src/config/` directory. Modify this file to customize the behavior of the application.
+
+> In-Progress... Please change global vars and recompile.
+
+## Screenshots
+<img src="./screenshots/editor.png" width="800" />
+<img src="./screenshots/desktop.png" width="800" />
 
 ## Dependencies
 - [Raylib](https://www.raylib.com/) - For rendering window.
