@@ -81,6 +81,10 @@ int main()
 	Font customFont = LoadFontEx("config/Oswald-Medium.ttf", 96, NULL, 0);
 	SetTextureFilter(customFont.texture, TEXTURE_FILTER_BILINEAR);
 
+	Image icon = LoadImage("config/keyboardnavigator_icon.png");
+	SetWindowIcon(icon);
+	UnloadImage(icon); // Needed if continuously loaded.
+
 	while (!WindowShouldClose())
 	{
 		// hotkey
