@@ -20,7 +20,7 @@ Keyboard Shortcut Monitor Navigation is a lightweight and efficient application 
 - Type the sequence of keys that appear where you want to click / focus.
 
 ### Prerequisites
-- CMake (minimum version 3.15)
+- CMake (minimum version 3.50)
 - A C++ compiler
 
 <!-- ### Build Instructions
