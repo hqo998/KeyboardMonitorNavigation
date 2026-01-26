@@ -1,7 +1,11 @@
+<div align="center">
+
 # Keyboard Shortcut Monitor Navigation
+<img src="./src/config/keyboardnavigator_icon.svg" width="350" />
+</div>
 
 ## Overview
-Keyboard Shortcut Monitor Navigation is a lightweight and efficient application designed to allow users to navigate windows swiftly with keyboard shortcuts. Built with C++ and with Raylib and Nlohmann JSON.
+Keyboard Shortcut Monitor Navigation is a lightweight and efficient application designed to allow users to navigate windows swiftly with keyboard shortcuts. Built with C++ with Raylib
 
 ## Features
 - **Cross-Platform Compatibility**: Aims to work on multiple operating systems. (Currently Windows only)
@@ -11,7 +15,8 @@ Keyboard Shortcut Monitor Navigation is a lightweight and efficient application 
 - **Extensible**: Modular design for adding new features.
 
 ## Getting Started
-- Default hotkey - SHIFT+ALT+D
+- Default hotkey: SHIFT+ALT+D
+- Switch monitors: 1 through 9 keys
 
 ### Prerequisites
 - CMake (minimum version 3.15)
@@ -47,7 +52,7 @@ Keyboard Shortcut Monitor Navigation is a lightweight and efficient application 
 The application uses a `config.json` file located in the `src/config/` directory. Modify this file to customize the behavior of the application. Example:
 
 ## Dependencies
-- [Raylib](https://www.raylib.com/): A simple and easy-to-use library to enjoy videogames programming.
-- [Nlohmann JSON](https://github.com/nlohmann/json): JSON for Modern C++.
+- [Raylib](https://www.raylib.com/) - For rendering window.
+- [Nlohmann JSON](https://github.com/nlohmann/json) - For reading config file.
 
 These dependencies are automatically downloaded and configured when built with the provided CMake configuration.
