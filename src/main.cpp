@@ -55,6 +55,11 @@ void FitToMonitor(VectorXY<int> &screen, int monitorIndex)
 	SetWindowSize(screen.x, screen.y);
 }
 
+void FitToQuadrant(VectorXY<int> &screen, int quadrantIndex)
+{
+
+}
+
 int main()
 {
 	
