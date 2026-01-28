@@ -18,6 +18,7 @@ Keyboard Shortcut Monitor Navigation is a lightweight and efficient application 
 - Default hotkey: SHIFT+ALT+D
 - Switch monitors: 1 through 9 keys
 - Type the sequence of keys that appear where you want to click / focus.
+- Use Shift + 1,2,3,4 to add more precision to a quadrant.
 
 ### Prerequisites
 - CMake (minimum version 3.50)

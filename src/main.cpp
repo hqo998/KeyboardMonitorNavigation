@@ -57,6 +57,30 @@ void FitToMonitor(VectorXY<int> &screen, int monitorIndex)
 
 void FitToQuadrant(VectorXY<int> &screen, int quadrantIndex)
 {
+	if (quadrantIndex > 4 && quadrantIndex < 0) return;
+	// std::println("Current monitor: {}", GetCurrentMonitor());
+
+	VectorXY<int> tempDims {GetMonitorWidth(GetCurrentMonitor()) - 1, GetMonitorHeight(GetCurrentMonitor()) - 1};
+	VectorXY<int> tempPos { (int)GetMonitorPosition(GetCurrentMonitor()).x, (int)GetMonitorPosition(GetCurrentMonitor()).y };
+
+	switch (quadrantIndex)
+	{
+	case 1:
+		SetWindowPosition(tempPos.x + tempDims.x / 2, tempPos.y);
+		break;
+	case 2:
+		SetWindowPosition(tempPos.x, tempPos.y);
+		break;
+	case 3:
+		SetWindowPosition(tempPos.x, tempPos.y + tempDims.y / 2);
+		break;
+	case 4:
+		SetWindowPosition(tempPos.x + tempDims.x / 2, tempPos.y + tempDims.y / 2);
+		break;
+	};
+
+	screen.x = tempDims.x / 2;
+	screen.y = tempDims.y / 2;
 
 }
 
@@ -74,7 +98,7 @@ int main()
 
 	FitToMonitor(screen, monitorIndex);
 
-	SetTargetFPS(30);
+	SetTargetFPS(45);
 
 	RenderTexture2D target = LoadRenderTexture(screen.x, screen.y);
 
@@ -108,6 +132,9 @@ int main()
 		if (!IsWindowMinimized())
 		{
 			// std::println("{}", letterSequence);
+			// Check both left and right Shift keys
+			int shiftHeld = os.IsKeyDown(VK_SHIFT);
+			// std::println("is shift held? {}", IsKeyDown(KEY_LEFT_SHIFT));
 
 			for (int key = 0; key < 256; key++)
 			{
@@ -121,7 +148,7 @@ int main()
 							letterSequence.pop_back();
 						}
 					}
-					else if (key == VK_DELETE)
+					else if (key == VK_DELETE) // clear letter combo
 					{
 						letterSequence.clear();
 					}
@@ -129,12 +156,17 @@ int main()
 					{
 						letterSequence += static_cast<char>(key);
 					}
-					else if (key >= '0' && key <= '9') // check number keys
+					else if (shiftHeld && key >= '0' && key <= '9')
+					{
+						std::println("Fitting to quadrant: {}", key - 0x30);
+						FitToQuadrant(screen, key - 0x30);
+					}
+					else if (key >= '0' && key <= '9') // check number keys for monitor switching
 					{
 						std::println("fitting to monitor: {}", key - 0x30);
 						FitToMonitor(screen, key - 0x30 - 1);
 					}
-					else if (key == VK_ESCAPE || key == VK_LBUTTON)
+					else if (key == VK_ESCAPE || key == VK_LBUTTON) // close window with other clicks
 					{
 						os.WindowVisibility(SW_SHOWMINIMIZED);
 					}
@@ -174,15 +206,16 @@ int main()
 				std::string buttonIdentity = std::format("{}{}", letterX, letterY);
 
 				// text calcs
-				float fontSize { 30 };
+				float fontSize { std::max(20.f, spacing.x / 3.f) };
 				float fontSpacing { 3 };
 				Vector2 textSize = MeasureTextEx(customFont, buttonIdentity.c_str(), fontSize, fontSpacing);
 
 				// buttonn placement
 				Rectangle rect = {static_cast<float>(spacing.x * iWide),
 								  static_cast<float>(spacing.y * iHigh),
-								  std::max(static_cast<float>(screen.x / 40), (textSize.x + 10)),
-								  30};
+								  std::max(static_cast<float>(screen.x / 40), (textSize.x * 1.2f)),
+								  std::max(1.f, textSize.y*1.3f)};
+
 				Vector2 origin = {rect.width * .5f, rect.height * .5f};
 				Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
 
@@ -213,8 +246,8 @@ int main()
 				if (SequenceInString(letterSequence, buttonIdentity))
 				{
 					amountValid++; // add how many valid amountValid match sequence
-					selection.x = static_cast<int>(rect.x + GetMonitorPosition(GetCurrentMonitor()).x); // TODO - MINUS MONITOR POSTION FOR CORRECT POS
-					selection.y = static_cast<int>(rect.y + GetMonitorPosition(GetCurrentMonitor()).y); // TODO - MINUS MONITOR POSTION FOR CORRECT
+					selection.x = static_cast<int>(rect.x + GetWindowPosition().x);
+					selection.y = static_cast<int>(rect.y + GetWindowPosition().y);
 				}
 			} // for (int iHigh = 1; iHigh < options.y; iHigh++)
 		} // for (int iWide = 1; iWide < options.x; iWide++)
@@ -247,6 +280,7 @@ int main()
 		if (amountValid == 1)
 		{
 			std::println("only 1!");
+			FitToMonitor(screen, GetCurrentMonitor());
 			os.WindowVisibility(SW_SHOWMINIMIZED);
 			os.SendMouseClick(MouseBTN::LeftClick, selection.x, selection.y);
 		}
