@@ -81,13 +81,10 @@ void FitToQuadrant(VectorXY<int> &screen, int quadrantIndex)
 
 	screen.x = tempDims.x / 2;
 	screen.y = tempDims.y / 2;
-
 }
 
 int main()
 {
-	
-
 	SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_ALWAYS_RUN | FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI); // Configures window to be transparent + always on top + always running
 	InitWindow(800, 450, "Keyboard Navigation");
 	SetWindowState(FLAG_WINDOW_UNDECORATED); // Hide border/titlebar; omit if you want them there.
@@ -206,7 +203,7 @@ int main()
 				std::string buttonIdentity = std::format("{}{}", letterX, letterY);
 
 				// text calcs
-				float fontSize { std::max(20.f, spacing.x / 3.f) };
+				float fontSize { std::max(25.f, spacing.x / 3.f) };
 				float fontSpacing { 3 };
 				Vector2 textSize = MeasureTextEx(customFont, buttonIdentity.c_str(), fontSize, fontSpacing);
 
@@ -221,12 +218,12 @@ int main()
 
 				// drawing boxes
 				DrawRectangleRounded({centredRect.x + 2, centredRect.y + 3, centredRect.width, centredRect.height},
-									 .3f,
+									 .5f,
 									 5,
 									 Colours::shadow);
 
 				DrawRectangleRounded(centredRect,
-									 .3f,
+									 .5f,
 									 5,
 									 SequenceInString(letterSequence, buttonIdentity) ? Colours::valid : Colours::invalid);
 
