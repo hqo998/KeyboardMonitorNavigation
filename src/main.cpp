@@ -6,10 +6,6 @@
 #include "keybinds.hpp"
 #include "configReader.hpp"
 
-
-
-
-
 // use winapi for registering a global hotkey
 Keybind toggleKeybind = {{VK_MENU, VK_SHIFT}, 'D'};
 
@@ -22,8 +18,6 @@ namespace Colours
 	constexpr Color shadow = {236, 190, 180, 255};
 	constexpr Color text = {71, 106, 111, 255};
 }
-
-
 
 std::string GetLabel(int index)
 {
@@ -48,8 +42,10 @@ bool SequenceInString(std::string_view letterSequence, std::string_view stringTo
 
 void FitToMonitor(VectorXY<int> &screen, int monitorIndex)
 {
-	if (monitorIndex > GetMonitorCount() - 1) return;
-	if (monitorIndex < 0) return;
+	if (monitorIndex > GetMonitorCount() - 1)
+		return;
+	if (monitorIndex < 0)
+		return;
 	screen = {GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex) - 1};
 	SetWindowPosition((int)GetMonitorPosition(monitorIndex).x, (int)GetMonitorPosition(monitorIndex).y);
 	SetWindowSize(screen.x, screen.y);
@@ -57,11 +53,12 @@ void FitToMonitor(VectorXY<int> &screen, int monitorIndex)
 
 void FitToQuadrant(VectorXY<int> &screen, int quadrantIndex)
 {
-	if (quadrantIndex > 4 && quadrantIndex < 0) return;
+	if (quadrantIndex > 4 && quadrantIndex < 0)
+		return;
 	// std::println("Current monitor: {}", GetCurrentMonitor());
 
-	VectorXY<int> tempDims {GetMonitorWidth(GetCurrentMonitor()) - 1, GetMonitorHeight(GetCurrentMonitor()) - 1};
-	VectorXY<int> tempPos { (int)GetMonitorPosition(GetCurrentMonitor()).x, (int)GetMonitorPosition(GetCurrentMonitor()).y };
+	VectorXY<int> tempDims{GetMonitorWidth(GetCurrentMonitor()) - 1, GetMonitorHeight(GetCurrentMonitor()) - 1};
+	VectorXY<int> tempPos{(int)GetMonitorPosition(GetCurrentMonitor()).x, (int)GetMonitorPosition(GetCurrentMonitor()).y};
 
 	switch (quadrantIndex)
 	{
@@ -113,12 +110,16 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		// hotkey
-		if (toggleKeybind.IsActivated(os)) {
-			if (!IsWindowMinimized()) {
+		// hotkey for enabling and disabling overlay
+		if (toggleKeybind.IsActivated(os))
+		{
+			if (!IsWindowMinimized())
+			{
 				std::println("toggle off");
 				os.WindowVisibility(SW_SHOWMINIMIZED);
-			} else {
+			}
+			else
+			{
 				std::println("toggle on");
 				os.WindowVisibility(SW_RESTORE);
 				os.FocusWindow();
@@ -153,7 +154,7 @@ int main()
 					{
 						letterSequence += static_cast<char>(key);
 					}
-					else if (shiftHeld && key >= '0' && key <= '9')
+					else if (shiftHeld && key >= '0' && key <= '9') // check for quadrant switching
 					{
 						std::println("Fitting to quadrant: {}", key - 0x30);
 						FitToQuadrant(screen, key - 0x30);
@@ -203,15 +204,15 @@ int main()
 				std::string buttonIdentity = std::format("{}{}", letterX, letterY);
 
 				// text calcs
-				float fontSize { std::max(25.f, spacing.x / 3.f) };
-				float fontSpacing { 3 };
+				float fontSize{std::max(25.f, spacing.x / 3.f)};
+				float fontSpacing{3};
 				Vector2 textSize = MeasureTextEx(customFont, buttonIdentity.c_str(), fontSize, fontSpacing);
 
 				// buttonn placement
 				Rectangle rect = {static_cast<float>(spacing.x * iWide),
 								  static_cast<float>(spacing.y * iHigh),
 								  std::max(static_cast<float>(screen.x / 40), (textSize.x * 1.2f)),
-								  std::max(1.f, textSize.y*1.3f)};
+								  std::max(1.f, textSize.y * 1.3f)};
 
 				Vector2 origin = {rect.width * .5f, rect.height * .5f};
 				Rectangle centredRect = {rect.x - origin.x, rect.y - origin.y, rect.width, rect.height};
@@ -229,15 +230,14 @@ int main()
 
 				// drawing box label
 				DrawTextPro(customFont,
-					buttonIdentity.c_str(), 
-						 {(rect.x + (rect.width - textSize.x)/2), (rect.y + (rect.height - textSize.y)/2)},
-						// {(rect.x), (rect.y)},
-						 origin,
-						 .0f,
-						 fontSize,
-						 fontSpacing,
-						 Colours::text);
-
+							buttonIdentity.c_str(),
+							{(rect.x + (rect.width - textSize.x) / 2), (rect.y + (rect.height - textSize.y) / 2)},
+							// {(rect.x), (rect.y)},
+							origin,
+							.0f,
+							fontSize,
+							fontSpacing,
+							Colours::text);
 
 				// setting selection stuff.
 				if (SequenceInString(letterSequence, buttonIdentity))
@@ -249,22 +249,21 @@ int main()
 			} // for (int iHigh = 1; iHigh < options.y; iHigh++)
 		} // for (int iWide = 1; iWide < options.x; iWide++)
 
-
 		// text letter sequence
-		float fontSize { 40 };
-		float fontSpacing { 3 };
+		float fontSize{40};
+		float fontSpacing{3};
 		Vector2 textSize = MeasureTextEx(customFont, letterSequence.c_str(), fontSize, fontSpacing);
 		DrawTextPro(customFont,
-			letterSequence.c_str(), 
-					{screen.x / 2 - textSize.x/2+1, 10+1},
+					letterSequence.c_str(),
+					{screen.x / 2 - textSize.x / 2 + 1, 10 + 1},
 					{0, 0},
 					.0f,
 					fontSize,
 					fontSpacing,
 					Colours::shadow);
 		DrawTextPro(customFont,
-			letterSequence.c_str(),
-					{(screen.x / 2 - textSize.x/2), 10},
+					letterSequence.c_str(),
+					{(screen.x / 2 - textSize.x / 2), 10},
 					{0, 0},
 					.0f,
 					fontSize,
@@ -274,7 +273,7 @@ int main()
 		// EndTextureMode();
 		EndDrawing();
 
-		if (amountValid == 1)
+		if (amountValid == 1) // when only one object selected do click.
 		{
 			std::println("only 1!");
 			FitToMonitor(screen, GetCurrentMonitor());
